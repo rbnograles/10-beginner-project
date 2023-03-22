@@ -11,7 +11,7 @@
 :root {
   --text-color: #f8bc10;
   --bg-color: #152038;
-  --todo-container-color: #071022;
+  --calculator-container-color: #071022;
   --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   --box-shadow-inset: inset 0 5px 15px rgba(61, 82, 117, 0.3),
     inset 0 -5px -15px rgba(28, 43, 63, 0.3);
@@ -26,7 +26,7 @@ body {
 }
 
 .calculator-grid {
-  background-color: var(--todo-container-color);
+  background-color: var(--calculator-container-color);
   border-radius: 10px;
   box-shadow: var(--box-shadow);
   display: grid;
@@ -43,26 +43,26 @@ body {
   justify-content: space-between;
   padding: 10px;
   height: 100px;
-  align-items: end;
   grid-column: 1 / -1;
   background-color: var(--bg-color);
   border-radius: 10px;
+  align-items: end;
 }
 
-.previous-operand {
+.prev-display {
   color: var(--text-color);
   font-size: 1.5rem;
 }
 
-.current-operand {
+.next-display {
   color: var(--text-color);
   font-size: 2.5rem;
 }
 
 button {
   position: relative;
-  overflow: hidden; /* hides the overflow of the span */
-  background-color: var(--todo-container-color);
+  overflow: hidden;
+  background-color: var(--calculator-container-color);
   border: none;
   border-radius: 50px;
   color: white;
@@ -76,7 +76,6 @@ button {
 button:hover {
   transform: translateY(-5px);
   color: var(--text-color);
-  box-shadow: var(--box-shadow);
 }
 
 button:active {
@@ -85,21 +84,21 @@ button:active {
   box-shadow: none;
 }
 
-button[btn-operation] {
+button[btn-operators] {
   background-color: var(--text-color);
-  color: var(--bg-color);
+  color: black;
 }
 
-button[btn-clear-all],
-[btn-clear],
+button[btn-percent],
+[btn-ce],
 [btn-del] {
   color: var(--text-color);
 }
 
-button.neu-btn-large {
+button[btn-span-two] {
   grid-column: 3 / -1;
-  color: var(--text-color);
   background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .ripple {

@@ -1,142 +1,132 @@
+const rippleBtn = document.querySelector("[btn-span-two]");
+
+rippleBtn.addEventListener("click", () => {
+  const span = rippleBtn.querySelector("span");
+  span.classList.remove("ripple");
+  void span.offsetWidth;
+  span.classList.add("ripple");
+});
+
+// Calculator Functionality
 class Calculator {
-  constructor(previousOperandTextElement, currentOperandTextElement) {
-    this.previousOperandTextElement = previousOperandTextElement;
-    this.currentOperandTextElement = currentOperandTextElement;
-    this.clear();
+  constructor(prevDisplayData, nextDisplayData) {
+    this.prevDisplayData = prevDisplayData;
+    this.nextDisplayData = nextDisplayData;
+    this.clearAll();
   }
 
-  clear() {
-    this.currentOperand = "";
-    this.previousOperand = "";
+  clearAll() {
+    this.currentOperation = "";
+    this.prevOperation = "";
     this.operation = undefined;
   }
 
   delete() {
-    this.currentOperand = this.currentOperand.toString().slice(0, -1);
+    this.currentOperation = this.currentOperation.slice(0, -1);
   }
 
   appendNumber(number) {
-    if (number === "." && this.currentOperand.includes(".")) return;
-    this.currentOperand = this.currentOperand.toString() + number.toString();
+    if (number === "." && this.currentOperation.includes(".")) return;
+    this.currentOperation = this.currentOperation + number;
   }
 
-  chooseOperation(operation) {
-    if (this.currentOperand === "") return;
-    if (this.previousOperand !== "") {
-      this.compute();
+  selectOperation(operation) {
+    if (this.currentOperation === "") return;
+    if (this.prevOperation !== "") {
+      this.calculate();
     }
+
     this.operation = operation;
-    this.previousOperand = this.currentOperand;
-    this.currentOperand = "";
+    this.prevOperation = this.currentOperation;
+    this.currentOperation = "";
   }
 
-  compute() {
-    let computation;
-    const prev = parseFloat(this.previousOperand);
-    const current = parseFloat(this.currentOperand);
+  calculate() {
+    let results;
+
+    const prev = parseFloat(this.prevOperation);
+    const current = parseFloat(this.currentOperation);
+
     if (isNaN(prev) || isNaN(current)) return;
+
     switch (this.operation) {
       case "+":
-        computation = prev + current;
+        results = prev + current;
         break;
       case "-":
-        computation = prev - current;
+        results = prev - current;
         break;
       case "*":
-        computation = prev * current;
+        results = prev * current;
         break;
-      case "÷":
-        computation = prev / current;
+      case "/":
+        results = prev / current;
+        break;
+      case "%":
+        results = prev % current;
         break;
       default:
         return;
     }
-    this.currentOperand = computation;
+    this.currentOperation = results;
     this.operation = undefined;
-    this.previousOperand = "";
+    this.prevOperation = "";
   }
 
-  getDisplayNumber(number) {
-    const stringNumber = number.toString();
-    const integerDigits = parseFloat(stringNumber.split(".")[0]);
-    const decimalDigits = stringNumber.split(".")[1];
-    let integerDisplay;
-    if (isNaN(integerDigits)) {
-      integerDisplay = "";
+  updateScreenDisplay() {
+    this.nextDisplayData.innerHTML = this.currentOperation;
+    if (this.operation != "") {
+      this.prevDisplayData.innerHTML = `${this.prevOperation} ${
+        this.operation !== undefined ? this.operation : ""
+      }`;
     } else {
-      integerDisplay = integerDigits.toLocaleString("en", {
-        maximumFractionDigits: 0,
-      });
-    }
-    if (decimalDigits != null) {
-      return `${integerDisplay}.${decimalDigits}`;
-    } else {
-      return integerDisplay;
-    }
-  }
-
-  updateDisplay() {
-    this.currentOperandTextElement.innerText = this.getDisplayNumber(
-      this.currentOperand
-    );
-    if (this.operation != null) {
-      this.previousOperandTextElement.innerText = `${this.getDisplayNumber(
-        this.previousOperand
-      )} ${this.operation}`;
-    } else {
-      this.previousOperandTextElement.innerText = "";
+      this.prevDisplayData.innerHTML = "";
     }
   }
 }
 
-const numberButtons = document.querySelectorAll("[btn-number]");
-const operationButtons = document.querySelectorAll("[btn-operation]");
-const equalsButton = document.querySelector("[btn-equals]");
-const deleteButton = document.querySelector("[btn-del]");
-const allClearButton = document.querySelector("[btn-clear-all]");
-const previousOperandTextElement = document.querySelector("[data-prev]");
-const currentOperandTextElement = document.querySelector("[data-next]");
-const buttons = document.querySelectorAll("button");
+const preDisplayData = document.querySelector("[prev-display]");
+const nextDisplayData = document.querySelector("[next-display]");
+const numbersBtn = document.querySelectorAll("[btn-numb]");
+const clearAllBtn = document.querySelector("[btn-ce]");
+const deleteBtn = document.querySelector("[btn-del]");
+const operatorsBtn = document.querySelectorAll("[btn-operators]");
+const equalsBtn = document.querySelector("[btn-equals]");
+const percentBtn = document.querySelector("[btn-percent]");
 
-buttons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const span = button.querySelector("span");
-    span.classList.remove("ripple");
-    void span.offsetWidth;
-    span.classList.add("ripple");
+const calculator = new Calculator(preDisplayData, nextDisplayData);
+
+numbersBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    calculator.appendNumber(btn.innerHTML);
+    calculator.updateScreenDisplay();
   });
 });
 
-const calculator = new Calculator(
-  previousOperandTextElement,
-  currentOperandTextElement
-);
-
-numberButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    calculator.appendNumber(button.innerText);
-    calculator.updateDisplay();
+operatorsBtn.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    calculator.selectOperation(btn.innerHTML);
+    calculator.updateScreenDisplay();
   });
 });
 
-operationButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    calculator.chooseOperation(button.innerText);
-    calculator.updateDisplay();
-  });
+percentBtn.addEventListener("click", () => {
+  calculator.selectOperation(percentBtn.innerHTML);
+  calculator.calculate();
+  calculator.updateScreenDisplay();
 });
 
-equalsButton.addEventListener("click", () => {
-  calculator.compute();
-  calculator.updateDisplay();
+equalsBtn.addEventListener("click", () => {
+  calculator.calculate();
+  calculator.updateScreenDisplay();
 });
 
-allClearButton.addEventListener("click", () => {
-  calculator.clear();
-  calculator.updateDisplay();
+clearAllBtn.addEventListener("click", () => {
+  calculator.clearAll();
+  calculator.updateScreenDisplay();
 });
 
-deleteButton.addEventListener("click", () => {
+deleteBtn.addEventListener("click", () => {
   calculator.delete();
-  calculator.updateDisplay();
+  calculator.updateScreenDisplay();
 });
